@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortcut Manager</title>
+    <style>
+        body{
+            background-color: orange;
+            text-align: center;
+            margin: 0px;
+            border: 0px;
+            padding: 0px;
+        }
+        #list{
+            width: 100%;
+            text-align: center;
+        }
+        td, th{
+            font-size: 17.5px;
+            text-align: center;
+        }
+        td{
+            border-top: 1px solid #dddddd;
+        }
+        a{
+            color:blue;
+            cursor: pointer;
+        }
+        button{
+            cursor: pointer;
+        }
+        a:hover{
+            text-decoration: underline;
+        }
+        a:visited{
+            color: blue;
+        }
+        .urla{
+            width: 70%;
+        }
+    </style>
+    <script>
+        const urlPattern = new RegExp('(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?');
+        const isValidUrl = urlString=> {
+	  	var urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
+	        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
+	        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
+	        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
+	        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
+	        '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
+	        return !!urlPattern.test(urlString);
+	    }
+        function wrap_html(inputString,n,insertChar){
+            var outputString='';
+            for(l=0; l<inputString.length; l++){
+                if(l%n==0 && l!=0){
+                    outputString=outputString+insertChar;
+                }
+                else if(l==0){
+                    outputString=outputString+inputString[0];
+                }
+                else{
+                    outputString=outputString+inputString[l];
+                }
+            }
+            return outputString;
+        }
+        function update(){
+            default_code='<table id="list"><tr><th><b>Code</b></th><th><b>URL</b></th></tr>';
+            for(i=0; i<localStorage.length; i++){
+                default_code=default_code+'<tr><td>'+wrap_html(Object.keys(localStorage)[i],30,'<br>')+'</td><td><a class="urla" target="_blank" href="'+Object.values(localStorage)[i]+'">'+wrap_html(Object.values(localStorage)[i],55,'<br>')+'</a><td style="cursor: pointer;" onclick=remove("'+Object.keys(localStorage)[i]+'")>✖</td></tr>';
+            }
+            default_code=default_code+'</table>';
+            document.getElementById('tabel').innerHTML=default_code;
+        }
+        function create(){
+            code1=document.getElementById('createcode').value;
+            url=document.getElementById('createurl').value;
+            if(code1!="" && url!="" && isValidUrl(url)==true){
+                localStorage.setItem(code1, url);
+                update();
+            }
+            else{
+                window.alert('Please try again!');
+            }
+        }
+        function open2(){
+            code2=document.getElementById('entercode').value;
+            if(Object.keys(localStorage).includes(code2)==true){
+                open(localStorage.getItem(code2));
+            }
+            else{
+                window.alert('Please make sure that you have entered the correct code!');
+            }
+        }
+        function remove(what){
+            localStorage.removeItem(what);
+            update();
+        }
+    </script>
+    <link rel="shortcut icon" href="data:image/png;base64,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">
+</head>
+<body onload="update()">
+    <h1 style="font-size: 40px;">Shortcut Manager</h1><hr><br>
+    <div style="width: 100% !important;">
+        <div id="create" style="display: inline; width: 100% !important;">
+            <input placeholder="Entry code" style="font-size: 20px; margin-left: 4%; width: 35%; text-align: center;" id="createcode">
+            <input value="https://" placeholder="URL" type="url" style="font-size: 20px; margin-left: 4%; width: 35%; text-align: center;" id="createurl">
+            <button onclick="create()" placeholder="Entry code" style="font-size: 20px; margin-left: 4%; width: auto; text-align: center; margin-top: 10px; color: white; background-color: red; border-radius: 7px; padding-left: 5%; padding-right: 5%;" id="btncreate">Create/Change</button>
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <hr>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div style="width: 100% !important;">
+        <div id="open" style="display: inline; width: 100% !important;">
+            <input placeholder="Enter code" style="font-size: 20px; margin-left: 4%; width: 35%; text-align: center;" id="entercode">
+            <button onclick="open2()" placeholder="Open" style="font-size: 20px; margin-left: 4%; width: 18%; text-align: center; margin-top: 10px; color: white; background-color: red; border-radius: 7px; width: auto; padding-left: 5%; padding-right: 5%;" id="btnopen">Open</button>
+        </div>
+    </div>
+    <br>
+    <br>
+    <hr>
+    <br>
+    <br>
+    <div id="tabel"></div>
+</body>
+</html>
